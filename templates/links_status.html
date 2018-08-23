@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="container">
+
+        <div class="form-group">
+            <label for="sel1">Refresh Interval:</label>
+            <select class="form-control" id="interval">
+                <option>10 sec</option>
+                <option>30 sec</option>
+                <option>60 sec</option>
+            </select>
+        </div>
+
+        <table class="table" id="records_table"></table>
+    </div>
+
+    <script>
+
+
+        function getCookie(c_name) {
+            if (document.cookie.length > 0) {
+                let c_start = document.cookie.indexOf(c_name + "=");
+                if (c_start !== -1) {
+                    c_start = c_start + c_name.length + 1;
+                    let c_end = document.cookie.indexOf(";", c_start);
+                    if (c_end === -1) c_end = document.cookie.length;
+                    return unescape(document.cookie.substring(c_start, c_end));
+                }
+            }
+            return "";
+        }
+
+        function disableLink(url) {
+            $.ajaxSetup({
+                headers: {"X-CSRFToken": getCookie("csrftoken")}
+            });
+            $.ajax({
+                type: "POST",
+                url: "/protected/",
+                data: {
+                    url: url
+                },
+                success: function (response) {
+                    getData()
+                }
+            });
+        }
+
+        function getData() {
+            $.ajax({
+                type: "GET",
+                url: "/protected/",
+                data: {ajax_request: true},
+                success: function (response) {
+
+                    $('#records_table tbody').remove();
+                    let trHTML = '';
+                    $.each(response.data, function (key, value) {
+                        let button = '';
+                        let tr = '';
+                        if (value.enabled) {
+                            button = '<button type="button" onclick="disableLink(' + "'" + value.url + "'" + ')" class="btn btn-success">Enabled</button>';
+                        } else {
+                            button = '<button type="button" onclick="disableLink(' + "'" + value.url + "'" + ')" class="btn btn-danger">Disabled</button>';
+                        }
+
+                        if (value.status === 200) {
+                            tr = '<tr style="background-color:#28a74557">'
+                        } else {
+                            tr = '<tr style="background-color:#dc354552">'
+                        }
+
+                        trHTML +=
+                            tr + '<td>' + value.url +
+                            '</td><td align="right">' + button +
+                            '</td></tr>';
+                    });
+                    $('#records_table').append(trHTML);
+                }
+            }).then(function () {
+                let interval = $('#interval').val();
+                interval = interval.substring(0, 2);
+                setTimeout(getData, parseInt(interval) * 1000);
+            });
+        }
+
+        getData()
+
+    </script>
+{% endblock %}

@@ -1,0 +1,4 @@
+Django project (Django v1.11.*, Python, v2.7.*) in git repository with applications code that:
+1. Allow store and manipulate with set of URL (stored in DB, using django ORM), manipulation (add/delete) via Django admin.
+2. Simple view for authenticated users, that shows list of urls, monitors url access status (using Ajax request to server), lets choose check interval, pause individual links check
+3. On ajax request, server should check (in async) all users links listed in db and return HTTP status code of urls (200 - green row in list, other - red row in list).
