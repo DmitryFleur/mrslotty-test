@@ -6,4 +6,4 @@ greenlet==0.4.14
 idna==2.7
 pytz==2018.5
 requests==2.19.1
-urllib3==1.23
+urllib3==1.26.5
